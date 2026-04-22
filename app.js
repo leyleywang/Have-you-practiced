@@ -816,9 +816,9 @@ const UI = {
                             <div class="diary-stage">${diary.name}</div>
                             <div class="diary-name">${diary.name}</div>
                             <div class="diary-details">
-                                <div class="diary-detail-item">⏱️ ${diary.duration}分钟</div>
-                                <div class="diary-detail-item">⚖️ ${diary.targetWeight}kg</div>
-                                <div class="diary-detail-item">${diary.completed ? '✅ 已完成' : '❌ 未完成'}</div>
+                                <div class="diary-detail-item"><span class="icon-clock" style="margin-right: 4px;"></span>${diary.duration}分钟</div>
+                                <div class="diary-detail-item"><span class="icon-scale-style" style="margin-right: 4px; width: 14px; height: 12px;"></span>${diary.targetWeight}kg</div>
+                                <div class="diary-detail-item">${diary.completed ? '<span class=\"icon-check\" style=\"margin-right: 4px; color: var(--success-color);\"></span>已完成' : '<span class=\"icon-cross\" style=\"margin-right: 4px; color: var(--danger-color);\"></span>未完成'}</div>
                             </div>
                         </div>
                     `).join('')}
@@ -1621,7 +1621,10 @@ function resetData() {
     Storage.clearAll();
     AppState.init();
     UI.hideModal();
-    UI.showOnboarding();
+    UI.showMainApp();
+    setTimeout(() => {
+        ForcedOnboarding.show();
+    }, 100);
 }
 
 // ==================== 强制引导弹窗管理 ====================
@@ -1785,6 +1788,17 @@ const TimePicker = {
         
         if (hourWheel) {
             hourWheel.innerHTML = '';
+            const itemHeight = 50;
+            const containerHeight = 200;
+            const paddingCount = Math.ceil((containerHeight - itemHeight) / 2 / itemHeight) + 1;
+            
+            for (let i = 0; i < paddingCount; i++) {
+                const spacer = document.createElement('div');
+                spacer.className = 'time-wheel-spacer';
+                spacer.style.height = itemHeight + 'px';
+                hourWheel.appendChild(spacer);
+            }
+            
             for (let i = 0; i < 24; i++) {
                 const item = document.createElement('div');
                 item.className = `time-wheel-item ${i === this.selectedHour ? 'selected' : ''}`;
@@ -1793,11 +1807,30 @@ const TimePicker = {
                 item.addEventListener('click', () => this.selectHour(i));
                 hourWheel.appendChild(item);
             }
-            this.scrollToSelected(hourWheel, this.selectedHour);
+            
+            for (let i = 0; i < paddingCount; i++) {
+                const spacer = document.createElement('div');
+                spacer.className = 'time-wheel-spacer';
+                spacer.style.height = itemHeight + 'px';
+                hourWheel.appendChild(spacer);
+            }
+            
+            this.scrollToSelected(hourWheel, this.selectedHour, paddingCount);
         }
         
         if (minuteWheel) {
             minuteWheel.innerHTML = '';
+            const itemHeight = 50;
+            const containerHeight = 200;
+            const paddingCount = Math.ceil((containerHeight - itemHeight) / 2 / itemHeight) + 1;
+            
+            for (let i = 0; i < paddingCount; i++) {
+                const spacer = document.createElement('div');
+                spacer.className = 'time-wheel-spacer';
+                spacer.style.height = itemHeight + 'px';
+                minuteWheel.appendChild(spacer);
+            }
+            
             for (let i = 0; i < 60; i += 5) {
                 const item = document.createElement('div');
                 item.className = `time-wheel-item ${i === this.selectedMinute ? 'selected' : ''}`;
@@ -1806,13 +1839,23 @@ const TimePicker = {
                 item.addEventListener('click', () => this.selectMinute(i));
                 minuteWheel.appendChild(item);
             }
-            this.scrollToSelected(minuteWheel, this.selectedMinute / 5);
+            
+            for (let i = 0; i < paddingCount; i++) {
+                const spacer = document.createElement('div');
+                spacer.className = 'time-wheel-spacer';
+                spacer.style.height = itemHeight + 'px';
+                minuteWheel.appendChild(spacer);
+            }
+            
+            this.scrollToSelected(minuteWheel, this.selectedMinute / 5, paddingCount);
         }
     },
 
-    scrollToSelected(wheel, index) {
+    scrollToSelected(wheel, index, paddingCount) {
         const itemHeight = 50;
-        wheel.scrollTop = index * itemHeight - wheel.offsetHeight / 2 + itemHeight / 2;
+        setTimeout(() => {
+            wheel.scrollTop = (index + paddingCount) * itemHeight - wheel.offsetHeight / 2 + itemHeight / 2;
+        }, 10);
     },
 
     selectHour(hour) {

@@ -45,33 +45,31 @@
 .icon-home {
     position: relative;
     display: inline-block;
-    width: 22px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     vertical-align: middle;
 }
 
 .icon-home::before {
     content: '';
     position: absolute;
-    top: 2px;
-    left: 3px;
+    top: 4px;
+    left: 4px;
     width: 16px;
-    height: 12px;
-    border: 2px solid currentColor;
-    border-top: none;
-    border-radius: 0 0 3px 3px;
+    height: 14px;
+    background: currentColor;
+    clip-path: polygon(50% 0%, 0% 40%, 15% 40%, 15% 100%, 85% 100%, 85% 40%, 100% 40%);
 }
 
 .icon-home::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 1px;
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 8px solid currentColor;
+    top: 10px;
+    left: 9px;
+    width: 6px;
+    height: 8px;
+    background: var(--bg-primary);
+    border-radius: 1px;
 }
 
 .icon-plan {
@@ -351,34 +349,162 @@
 .icon-pencil {
     position: relative;
     display: inline-block;
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     vertical-align: middle;
 }
 
 .icon-pencil::before {
     content: '';
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 10px;
-    height: 4px;
-    background: currentColor;
+    top: 2px;
+    left: 2px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid currentColor;
+    border-right: none;
+    border-bottom: none;
     transform: rotate(-45deg);
-    transform-origin: top left;
+    transform-origin: bottom right;
 }
 
 .icon-pencil::after {
     content: '';
     position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 8px;
-    height: 8px;
-    border: 2px solid currentColor;
-    border-left: none;
-    border-bottom: none;
+    bottom: 2px;
+    right: 2px;
+    width: 6px;
+    height: 2px;
+    background: currentColor;
     transform: rotate(-45deg);
+    transform-origin: right center;
+}
+
+/* 时钟图标 */
+.icon-clock {
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+}
+
+.icon-clock::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 2px;
+    background: currentColor;
+    transform-origin: left center;
+    transform: translate(-1px, -1px) rotate(-90deg);
+}
+
+.icon-clock::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 2px;
+    background: currentColor;
+    transform-origin: left center;
+    transform: translate(-1px, -1px) rotate(0deg);
+}
+
+/* 勾选图标 */
+.icon-check {
+    position: relative;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+
+.icon-check::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 2px;
+    width: 6px;
+    height: 10px;
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* 叉号图标 */
+.icon-cross {
+    position: relative;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    vertical-align: middle;
+}
+
+.icon-cross::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 1px;
+    width: 12px;
+    height: 2px;
+    background: currentColor;
+    transform: translateY(-1px) rotate(45deg);
+}
+
+.icon-cross::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 1px;
+    width: 12px;
+    height: 2px;
+    background: currentColor;
+    transform: translateY(-1px) rotate(-45deg);
+}
+
+/* 齿轮/设置图标 */
+.icon-gear {
+    position: relative;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+}
+
+.icon-gear::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.icon-gear::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    background: currentColor;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    box-shadow: 
+        8px 5px 0 currentColor,
+        5px 13px 0 currentColor,
+        -5px 13px 0 currentColor,
+        -8px 5px 0 currentColor,
+        -5px -3px 0 currentColor,
+        5px -3px 0 currentColor;
 }
 
 /* 目标图标 */
@@ -542,12 +668,20 @@ body {
     padding: 20px 16px 16px;
     background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
     color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .page-title {
     font-size: 24px;
     font-weight: 600;
-    margin-bottom: 4px;
+    margin-bottom: 0;
+}
+
+.page-header-right {
+    display: flex;
+    align-items: center;
 }
 
 .date-display {
