@@ -1177,14 +1177,20 @@ const SettingsManager = {
                 <div class="form-group">
                     <label>健身目标</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;">
-                        ${['lose', 'gain', 'maintain', 'strength'].map(goal => `
+                        ${['lose', 'gain', 'maintain', 'strength'].map(goal => {
+                            const iconClass = goal === 'lose' ? 'icon-fire-style' : 
+                                             goal === 'gain' ? 'icon-muscle-style' : 
+                                             goal === 'maintain' ? 'icon-scale-style' : 
+                                             'icon-dumbbell-style';
+                            return `
                             <div class="goal-option ${AppState.user.goal === goal ? 'selected' : ''}" 
                                  data-goal="${goal}" 
                                  onclick="selectProfileGoal('${goal}')">
-                                <span class="goal-icon">${goal === 'lose' ? '🔥' : goal === 'gain' ? '💪' : goal === 'maintain' ? '⚖️' : '🏋️'}</span>
+                                <span class="goal-icon"><span class="${iconClass}"></span></span>
                                 <span class="goal-text">${Utils.getGoalLabel(goal)}</span>
                             </div>
-                        `).join('')}
+                            `;
+                        }).join('')}
                     </div>
                 </div>
             </div>
