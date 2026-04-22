@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>练了么 - 健身追踪</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- 新用户引导页面 -->
+        <div id="onboarding-page" class="page hidden">
+            <div class="onboarding-container">
+                <h1 class="app-title">练了么</h1>
+                <p class="app-subtitle">让健身成为习惯</p>
+                
+                <div id="onboarding-steps">
+                    <!-- 步骤1：基本信息 -->
+                    <div class="onboarding-step active" id="step-1">
+                        <div class="step-header">
+                            <span class="step-indicator">1/4</span>
+                            <h2>基本信息</h2>
+                        </div>
+                        <div class="form-group">
+                            <label for="height">身高 (cm)</label>
+                            <input type="number" id="height" placeholder="例如: 175" min="100" max="250">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">当前体重 (kg)</label>
+                            <input type="number" id="weight" placeholder="例如: 70" min="30" max="300">
+                        </div>
+                        <button class="btn btn-primary" onclick="nextStep(1)">下一步</button>
+                    </div>
+                    
+                    <!-- 步骤2：健身目标 -->
+                    <div class="onboarding-step hidden" id="step-2">
+                        <div class="step-header">
+                            <span class="step-indicator">2/4</span>
+                            <h2>健身目标</h2>
+                        </div>
+                        <div class="goal-options">
+                            <div class="goal-option" data-goal="lose" onclick="selectGoal('lose')">
+                                <span class="goal-icon">🔥</span>
+                                <span class="goal-text">减脂减重</span>
+                            </div>
+                            <div class="goal-option" data-goal="gain" onclick="selectGoal('gain')">
+                                <span class="goal-icon">💪</span>
+                                <span class="goal-text">增肌塑形</span>
+                            </div>
+                            <div class="goal-option" data-goal="maintain" onclick="selectGoal('maintain')">
+                                <span class="goal-icon">⚖️</span>
+                                <span class="goal-text">保持健康</span>
+                            </div>
+                            <div class="goal-option" data-goal="strength" onclick="selectGoal('strength')">
+                                <span class="goal-icon">🏋️</span>
+                                <span class="goal-text">力量提升</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="prevStep(2)">上一步</button>
+                            <button class="btn btn-primary" onclick="nextStep(2)">下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤3：训练频率 -->
+                    <div class="onboarding-step hidden" id="step-3">
+                        <div class="step-header">
+                            <span class="step-indicator">3/4</span>
+                            <h2>每周训练天数</h2>
+                        </div>
+                        <div class="day-options">
+                            <div class="day-option" data-days="2" onclick="selectDays(2)">
+                                <span class="day-number">2</span>
+                                <span class="day-text">天/周</span>
+                            </div>
+                            <div class="day-option" data-days="3" onclick="selectDays(3)">
+                                <span class="day-number">3</span>
+                                <span class="day-text">天/周</span>
+                            </div>
+                            <div class="day-option" data-days="4" onclick="selectDays(4)">
+                                <span class="day-number">4</span>
+                                <span class="day-text">天/周</span>
+                            </div>
+                            <div class="day-option" data-days="5" onclick="selectDays(5)">
+                                <span class="day-number">5</span>
+                                <span class="day-text">天/周</span>
+                            </div>
+                            <div class="day-option" data-days="6" onclick="selectDays(6)">
+                                <span class="day-number">6</span>
+                                <span class="day-text">天/周</span>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="prevStep(3)">上一步</button>
+                            <button class="btn btn-primary" onclick="nextStep(3)">下一步</button>
+                        </div>
+                    </div>
+                    
+                    <!-- 步骤4：伤病情况 -->
+                    <div class="onboarding-step hidden" id="step-4">
+                        <div class="step-header">
+                            <span class="step-indicator">4/4</span>
+                            <h2>伤病情况</h2>
+                        </div>
+                        <p class="help-text">请选择您目前是否有以下部位的伤病或不适（可多选）：</p>
+                        <div class="injury-options">
+                            <label class="injury-option">
+                                <input type="checkbox" data-injury="knee">
+                                <span class="injury-text">膝关节</span>
+                            </label>
+                            <label class="injury-option">
+                                <input type="checkbox" data-injury="back">
+                                <span class="injury-text">腰部</span>
+                            </label>
+                            <label class="injury-option">
+                                <input type="checkbox" data-injury="shoulder">
+                                <span class="injury-text">肩部</span>
+                            </label>
+                            <label class="injury-option">
+                                <input type="checkbox" data-injury="wrist">
+                                <span class="injury-text">手腕</span>
+                            </label>
+                            <label class="injury-option">
+                                <input type="checkbox" data-injury="ankle">
+                                <span class="injury-text">脚踝</span>
+                            </label>
+                            <label class="injury-option">
+                                <input type="checkbox" data-injury="none">
+                                <span class="injury-text">无伤病</span>
+                            </label>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" onclick="prevStep(4)">上一步</button>
+                            <button class="btn btn-primary" onclick="completeOnboarding()">开始生成计划</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 主应用页面 -->
+        <div id="main-app" class="hidden">
+            <!-- 首页 -->
+            <div id="home-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">今日训练</h1>
+                    <span class="date-display" id="current-date"></span>
+                </div>
+                
+                <!-- 今日训练卡片 -->
+                <div class="card today-workout-card" id="today-workout">
+                    <div class="card-header">
+                        <h3>今日训练</h3>
+                        <span class="stage-badge" id="current-stage">阶段 1</span>
+                    </div>
+                    <div class="workout-content" id="today-workout-content">
+                        <!-- 动态填充 -->
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="startTodayWorkout()">开始训练</button>
+                </div>
+                
+                <!-- 日历打卡条 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>本周打卡</h3>
+                        <button class="btn-text" onclick="viewAllHistory()">查看全部</button>
+                    </div>
+                    <div class="calendar-strip" id="calendar-strip">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+                
+                <!-- 重量增长曲线 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>体重趋势</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="weight-chart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 每周训练报告 -->
+                <div class="card" id="weekly-report">
+                    <div class="card-header">
+                        <h3>本周报告</h3>
+                        <span class="week-badge" id="report-week"></span>
+                    </div>
+                    <div class="report-content" id="report-content">
+                        <!-- 动态填充 -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 计划页面 -->
+            <div id="plan-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">训练计划</h1>
+                    <button class="btn-text" onclick="showPlanSettings()">⚙️</button>
+                </div>
+                
+                <!-- 当前计划阶段 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>当前阶段</h3>
+                        <span class="intensity-badge" id="current-intensity">强度: 中等</span>
+                    </div>
+                    <div class="stage-progress">
+                        <div class="progress-info">
+                            <span class="progress-text" id="stage-progress-text">阶段 1 / 4</span>
+                            <span class="progress-percent" id="stage-progress-percent">25%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="stage-progress-fill" style="width: 25%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 分阶段计划列表 -->
+                <div class="plan-stages" id="plan-stages">
+                    <!-- 动态填充 -->
+                </div>
+            </div>
+            
+            <!-- 日记页面 -->
+            <div id="diary-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">训练日记</h1>
+                    <div class="filter-options">
+                        <button class="filter-btn active" data-filter="all" onclick="filterDiary('all')">全部</button>
+                        <button class="filter-btn" data-filter="completed" onclick="filterDiary('completed')">已完成</button>
+                        <button class="filter-btn" data-filter="missed" onclick="filterDiary('missed')">未完成</button>
+                    </div>
+                </div>
+                
+                <!-- 日记列表 -->
+                <div class="diary-list" id="diary-list">
+                    <!-- 动态填充 -->
+                </div>
+                
+                <!-- 空状态 -->
+                <div class="empty-state hidden" id="diary-empty">
+                    <div class="empty-icon">📝</div>
+                    <p class="empty-text">还没有训练记录</p>
+                    <p class="empty-subtext">开始训练后，这里会记录你的每一次进步</p>
+                </div>
+            </div>
+            
+            <!-- 我的页面 -->
+            <div id="profile-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">我的</h1>
+                </div>
+                
+                <!-- 用户信息卡片 -->
+                <div class="card user-card">
+                    <div class="user-info" onclick="showEditProfile()">
+                        <div class="avatar" id="user-avatar">
+                            <span id="avatar-text">练</span>
+                        </div>
+                        <div class="user-details">
+                            <h2 id="user-name">健身爱好者</h2>
+                            <p class="user-stats" id="user-stats">身高: -- cm | 体重: -- kg</p>
+                        </div>
+                        <span class="edit-arrow">›</span>
+                    </div>
+                </div>
+                
+                <!-- 训练统计 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>训练统计</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-total-days">0</div>
+                            <div class="stat-label">累计训练</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-current-streak">0</div>
+                            <div class="stat-label">连续打卡</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-total-hours">0</div>
+                            <div class="stat-label">训练时长(h)</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="stat-completion-rate">0%</div>
+                            <div class="stat-label">完成率</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 设置列表 -->
+                <div class="settings-list">
+                    <div class="settings-section">
+                        <h4 class="section-title">训练设置</h4>
+                        <div class="setting-item" onclick="showTrainingSettings()">
+                            <div class="setting-icon">⏰</div>
+                            <div class="setting-info">
+                                <span class="setting-title">训练提醒</span>
+                                <span class="setting-subtitle" id="reminder-status">已关闭</span>
+                            </div>
+                            <span class="setting-arrow">›</span>
+                        </div>
+                        <div class="setting-item" onclick="showDNDSettings()">
+                            <div class="setting-icon">🔕</div>
+                            <div class="setting-info">
+                                <span class="setting-title">免打扰时段</span>
+                                <span class="setting-subtitle" id="dnd-status">未设置</span>
+                            </div>
+                            <span class="setting-arrow">›</span>
+                        </div>
+                        <div class="setting-item">
+                            <div class="setting-icon">⚡</div>
+                            <div class="setting-info">
+                                <span class="setting-title">训练强度</span>
+                                <span class="setting-subtitle" id="intensity-status">中等</span>
+                            </div>
+                            <div class="setting-toggle">
+                                <input type="checkbox" id="intensity-auto" checked onchange="toggleAutoIntensity()">
+                                <label for="intensity-auto">自动调整</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4 class="section-title">数据管理</h4>
+                        <div class="setting-item" onclick="exportData()">
+                            <div class="setting-icon">📤</div>
+                            <div class="setting-info">
+                                <span class="setting-title">导出数据</span>
+                            </div>
+                            <span class="setting-arrow">›</span>
+                        </div>
+                        <div class="setting-item setting-danger" onclick="confirmResetData()">
+                            <div class="setting-icon">🗑️</div>
+                            <div class="setting-info">
+                                <span class="setting-title">重置数据</span>
+                            </div>
+                            <span class="setting-arrow">›</span>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h4 class="section-title">关于</h4>
+                        <div class="setting-item">
+                            <div class="setting-icon">ℹ️</div>
+                            <div class="setting-info">
+                                <span class="setting-title">关于练了么</span>
+                                <span class="setting-subtitle">版本 1.0.0</span>
+                            </div>
+                            <span class="setting-arrow">›</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部导航栏 -->
+            <nav class="bottom-nav">
+                <div class="nav-item active" data-page="home" onclick="switchPage('home')">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-label">首页</span>
+                </div>
+                <div class="nav-item" data-page="plan" onclick="switchPage('plan')">
+                    <span class="nav-icon">📋</span>
+                    <span class="nav-label">计划</span>
+                </div>
+                <div class="nav-item" data-page="diary" onclick="switchPage('diary')">
+                    <span class="nav-icon">📝</span>
+                    <span class="nav-label">日记</span>
+                </div>
+                <div class="nav-item" data-page="profile" onclick="switchPage('profile')">
+                    <span class="nav-icon">👤</span>
+                    <span class="nav-label">我的</span>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- 模态框容器 -->
+        <div id="modal-overlay" class="modal-overlay hidden">
+            <div class="modal" id="modal-content">
+                <!-- 动态填充 -->
+            </div>
+        </div>
+        
+        <!-- 通知提示 -->
+        <div id="notification" class="notification hidden">
+            <div class="notification-icon" id="notification-icon">💡</div>
+            <div class="notification-content">
+                <div class="notification-title" id="notification-title">提示</div>
+                <div class="notification-message" id="notification-message">这是一条通知消息</div>
+            </div>
+            <button class="notification-close" onclick="hideNotification()">×</button>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
