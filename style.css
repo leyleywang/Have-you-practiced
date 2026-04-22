@@ -44,8 +44,10 @@
 /* 导航图标 */
 .icon-home {
     position: relative;
+    display: inline-block;
     width: 22px;
     height: 20px;
+    vertical-align: middle;
 }
 
 .icon-home::before {
@@ -74,10 +76,12 @@
 
 .icon-plan {
     position: relative;
+    display: inline-block;
     width: 22px;
     height: 22px;
     border: 2px solid currentColor;
     border-radius: 3px;
+    vertical-align: middle;
 }
 
 .icon-plan::before {
@@ -93,10 +97,12 @@
 
 .icon-diary {
     position: relative;
+    display: inline-block;
     width: 18px;
     height: 22px;
     border: 2px solid currentColor;
     border-radius: 2px 2px 2px 8px;
+    vertical-align: middle;
 }
 
 .icon-diary::before {
@@ -112,8 +118,10 @@
 
 .icon-profile {
     position: relative;
+    display: inline-block;
     width: 22px;
     height: 22px;
+    vertical-align: middle;
 }
 
 .icon-profile::before {
@@ -142,8 +150,10 @@
 /* 设置图标 */
 .icon-bell {
     position: relative;
+    display: inline-block;
     width: 20px;
     height: 22px;
+    vertical-align: middle;
 }
 
 .icon-bell::before {
@@ -171,8 +181,10 @@
 
 .icon-moon {
     position: relative;
+    display: inline-block;
     width: 20px;
     height: 20px;
+    vertical-align: middle;
 }
 
 .icon-moon::before {
@@ -189,8 +201,10 @@
 
 .icon-lightning {
     position: relative;
+    display: inline-block;
     width: 16px;
     height: 22px;
+    vertical-align: middle;
 }
 
 .icon-lightning::before {
@@ -219,10 +233,12 @@
 
 .icon-export {
     position: relative;
+    display: inline-block;
     width: 20px;
     height: 20px;
     border: 2px solid currentColor;
     border-radius: 2px;
+    vertical-align: middle;
 }
 
 .icon-export::before {
@@ -249,8 +265,10 @@
 
 .icon-trash {
     position: relative;
+    display: inline-block;
     width: 18px;
     height: 22px;
+    vertical-align: middle;
 }
 
 .icon-trash::before {
@@ -278,10 +296,12 @@
 
 .icon-info {
     position: relative;
+    display: inline-block;
     width: 20px;
     height: 20px;
     border: 2px solid currentColor;
     border-radius: 50%;
+    vertical-align: middle;
 }
 
 .icon-info::before {
@@ -294,11 +314,80 @@
     font-weight: bold;
 }
 
+/* 闹钟图标 */
+.icon-alarm {
+    position: relative;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    vertical-align: middle;
+}
+
+.icon-alarm::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 3px;
+    width: 16px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.icon-alarm::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 7px;
+    width: 8px;
+    height: 4px;
+    border-left: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    border-radius: 0 0 2px 2px;
+}
+
+/* 铅笔编辑图标 */
+.icon-pencil {
+    position: relative;
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+
+.icon-pencil::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 4px;
+    background: currentColor;
+    transform: rotate(-45deg);
+    transform-origin: top left;
+}
+
+.icon-pencil::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 8px;
+    height: 8px;
+    border: 2px solid currentColor;
+    border-left: none;
+    border-bottom: none;
+    transform: rotate(-45deg);
+}
+
 /* 目标图标 */
 .icon-fire-style {
     position: relative;
+    display: inline-block;
     width: 20px;
     height: 24px;
+    vertical-align: middle;
 }
 
 .icon-fire-style::before {
@@ -325,8 +414,10 @@
 
 .icon-muscle-style {
     position: relative;
+    display: inline-block;
     width: 24px;
     height: 18px;
+    vertical-align: middle;
 }
 
 .icon-muscle-style::before {
@@ -353,8 +444,10 @@
 
 .icon-scale-style {
     position: relative;
+    display: inline-block;
     width: 22px;
     height: 20px;
+    vertical-align: middle;
 }
 
 .icon-scale-style::before {
@@ -382,8 +475,10 @@
 
 .icon-dumbbell-style {
     position: relative;
+    display: inline-block;
     width: 24px;
     height: 16px;
+    vertical-align: middle;
 }
 
 .icon-dumbbell-style::before {
@@ -425,6 +520,11 @@ body {
     background-color: var(--bg-primary);
     position: relative;
     overflow-x: hidden;
+}
+
+/* 通用隐藏类 */
+.hidden {
+    display: none !important;
 }
 
 .page {
