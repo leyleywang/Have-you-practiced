@@ -5,101 +5,381 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>练了么 - 健身追踪</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.15em;
+            fill: currentColor;
+            overflow: hidden;
+        }
+        
+        .icon-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .icon-fire { background: linear-gradient(135deg, #FF6B6B, #FF8E53); color: white; }
+        .icon-muscle { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .icon-scale { background: linear-gradient(135deg, #11998e, #38ef7d); color: white; }
+        .icon-dumbbell { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
+        
+        .nav-icon-svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .setting-icon-svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        /* 强制引导弹窗样式 */
+        #forced-onboarding-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        #forced-onboarding-overlay.hidden {
+            display: none;
+        }
+        
+        .forced-onboarding-modal {
+            width: 90%;
+            max-width: 400px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .forced-onboarding-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            text-align: center;
+        }
+        
+        .forced-onboarding-header h1 {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+        
+        .forced-onboarding-header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .forced-onboarding-body {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .forced-step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .forced-step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--bg-tertiary);
+            transition: all 0.3s ease;
+        }
+        
+        .forced-step-dot.active {
+            width: 24px;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+        }
+        
+        .forced-step-dot.completed {
+            background-color: var(--success-color);
+        }
+        
+        .avatar-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .avatar-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .avatar-option.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.3);
+        }
+        
+        .avatar-1 { background: linear-gradient(135deg, #FF6B6B, #FF8E53); }
+        .avatar-2 { background: linear-gradient(135deg, #4ECDC4, #44A08D); }
+        .avatar-3 { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .avatar-4 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .avatar-5 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .avatar-6 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .avatar-7 { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .avatar-8 { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+        
+        .time-picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 250;
+        }
+        
+        .time-picker-overlay.hidden {
+            display: none;
+        }
+        
+        .time-picker-modal {
+            width: 100%;
+            max-width: 480px;
+            background: white;
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+        }
+        
+        .time-picker-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .time-picker-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .time-wheel-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .time-wheel {
+            width: 80px;
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .time-wheel::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .time-wheel-item {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--text-light);
+            scroll-snap-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .time-wheel-item.selected {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 24px;
+        }
+        
+        .time-selection-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 50px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            pointer-events: none;
+        }
+        
+        .no-plan-state {
+            text-align: center;
+            padding: 60px 24px;
+        }
+        
+        .no-plan-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        
+        .no-plan-text {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .no-plan-subtext {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        
+        .avatar-edit-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
-        <!-- 新用户引导页面 -->
-        <div id="onboarding-page" class="page hidden">
-            <div class="onboarding-container">
-                <h1 class="app-title">练了么</h1>
-                <p class="app-subtitle">让健身成为习惯</p>
-                
-                <div id="onboarding-steps">
-                    <!-- 步骤1：基本信息 -->
-                    <div class="onboarding-step active" id="step-1">
+        <!-- 强制引导弹窗（层级最高） -->
+        <div id="forced-onboarding-overlay" class="hidden">
+            <div class="forced-onboarding-modal">
+                <div class="forced-onboarding-header">
+                    <h1>练了么</h1>
+                    <p>让健身成为习惯</p>
+                </div>
+                <div class="forced-onboarding-body">
+                    <div class="forced-step-indicator" id="forced-step-indicator">
+                        <div class="forced-step-dot active"></div>
+                        <div class="forced-step-dot"></div>
+                        <div class="forced-step-dot"></div>
+                        <div class="forced-step-dot"></div>
+                    </div>
+                    
+                    <div id="forced-step-1">
                         <div class="step-header">
-                            <span class="step-indicator">1/4</span>
                             <h2>基本信息</h2>
                         </div>
                         <div class="form-group">
-                            <label for="height">身高 (cm)</label>
-                            <input type="number" id="height" placeholder="例如: 175" min="100" max="250">
+                            <label for="forced-height">身高 (cm)</label>
+                            <input type="number" id="forced-height" placeholder="例如: 175" min="100" max="250">
                         </div>
                         <div class="form-group">
-                            <label for="weight">当前体重 (kg)</label>
-                            <input type="number" id="weight" placeholder="例如: 70" min="30" max="300">
+                            <label for="forced-weight">当前体重 (kg)</label>
+                            <input type="number" id="forced-weight" placeholder="例如: 70" min="30" max="300">
                         </div>
-                        <button class="btn btn-primary" onclick="nextStep(1)">下一步</button>
+                        <button class="btn btn-primary btn-full" onclick="forcedNextStep(1)">下一步</button>
                     </div>
                     
-                    <!-- 步骤2：健身目标 -->
-                    <div class="onboarding-step hidden" id="step-2">
+                    <div id="forced-step-2" class="hidden">
                         <div class="step-header">
-                            <span class="step-indicator">2/4</span>
                             <h2>健身目标</h2>
                         </div>
                         <div class="goal-options">
-                            <div class="goal-option" data-goal="lose" onclick="selectGoal('lose')">
-                                <span class="goal-icon">🔥</span>
+                            <div class="goal-option" data-goal="lose" onclick="selectForcedGoal('lose')">
+                                <span class="icon-circle icon-fire">🔥</span>
                                 <span class="goal-text">减脂减重</span>
                             </div>
-                            <div class="goal-option" data-goal="gain" onclick="selectGoal('gain')">
-                                <span class="goal-icon">💪</span>
+                            <div class="goal-option" data-goal="gain" onclick="selectForcedGoal('gain')">
+                                <span class="icon-circle icon-muscle">💪</span>
                                 <span class="goal-text">增肌塑形</span>
                             </div>
-                            <div class="goal-option" data-goal="maintain" onclick="selectGoal('maintain')">
-                                <span class="goal-icon">⚖️</span>
+                            <div class="goal-option" data-goal="maintain" onclick="selectForcedGoal('maintain')">
+                                <span class="icon-circle icon-scale">⚖️</span>
                                 <span class="goal-text">保持健康</span>
                             </div>
-                            <div class="goal-option" data-goal="strength" onclick="selectGoal('strength')">
-                                <span class="goal-icon">🏋️</span>
+                            <div class="goal-option" data-goal="strength" onclick="selectForcedGoal('strength')">
+                                <span class="icon-circle icon-dumbbell">🏋️</span>
                                 <span class="goal-text">力量提升</span>
                             </div>
                         </div>
                         <div class="btn-group">
-                            <button class="btn btn-secondary" onclick="prevStep(2)">上一步</button>
-                            <button class="btn btn-primary" onclick="nextStep(2)">下一步</button>
+                            <button class="btn btn-secondary" onclick="forcedPrevStep(2)">上一步</button>
+                            <button class="btn btn-primary" onclick="forcedNextStep(2)">下一步</button>
                         </div>
                     </div>
                     
-                    <!-- 步骤3：训练频率 -->
-                    <div class="onboarding-step hidden" id="step-3">
+                    <div id="forced-step-3" class="hidden">
                         <div class="step-header">
-                            <span class="step-indicator">3/4</span>
                             <h2>每周训练天数</h2>
                         </div>
                         <div class="day-options">
-                            <div class="day-option" data-days="2" onclick="selectDays(2)">
+                            <div class="day-option" data-days="2" onclick="selectForcedDays(2)">
                                 <span class="day-number">2</span>
                                 <span class="day-text">天/周</span>
                             </div>
-                            <div class="day-option" data-days="3" onclick="selectDays(3)">
+                            <div class="day-option" data-days="3" onclick="selectForcedDays(3)">
                                 <span class="day-number">3</span>
                                 <span class="day-text">天/周</span>
                             </div>
-                            <div class="day-option" data-days="4" onclick="selectDays(4)">
+                            <div class="day-option" data-days="4" onclick="selectForcedDays(4)">
                                 <span class="day-number">4</span>
                                 <span class="day-text">天/周</span>
                             </div>
-                            <div class="day-option" data-days="5" onclick="selectDays(5)">
+                            <div class="day-option" data-days="5" onclick="selectForcedDays(5)">
                                 <span class="day-number">5</span>
                                 <span class="day-text">天/周</span>
                             </div>
-                            <div class="day-option" data-days="6" onclick="selectDays(6)">
+                            <div class="day-option" data-days="6" onclick="selectForcedDays(6)">
                                 <span class="day-number">6</span>
                                 <span class="day-text">天/周</span>
                             </div>
                         </div>
                         <div class="btn-group">
-                            <button class="btn btn-secondary" onclick="prevStep(3)">上一步</button>
-                            <button class="btn btn-primary" onclick="nextStep(3)">下一步</button>
+                            <button class="btn btn-secondary" onclick="forcedPrevStep(3)">上一步</button>
+                            <button class="btn btn-primary" onclick="forcedNextStep(3)">下一步</button>
                         </div>
                     </div>
                     
-                    <!-- 步骤4：伤病情况 -->
-                    <div class="onboarding-step hidden" id="step-4">
+                    <div id="forced-step-4" class="hidden">
                         <div class="step-header">
-                            <span class="step-indicator">4/4</span>
                             <h2>伤病情况</h2>
                         </div>
                         <p class="help-text">请选择您目前是否有以下部位的伤病或不适（可多选）：</p>
@@ -130,16 +410,60 @@
                             </label>
                         </div>
                         <div class="btn-group">
-                            <button class="btn btn-secondary" onclick="prevStep(4)">上一步</button>
-                            <button class="btn btn-primary" onclick="completeOnboarding()">开始生成计划</button>
+                            <button class="btn btn-secondary" onclick="forcedPrevStep(4)">上一步</button>
+                            <button class="btn btn-primary" onclick="completeForcedOnboarding()">开始生成计划</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- 时间选择器弹窗 -->
+        <div id="time-picker-overlay" class="time-picker-overlay hidden">
+            <div class="time-picker-modal">
+                <div class="time-picker-header">
+                    <button class="btn-text" onclick="closeTimePicker()">取消</button>
+                    <span class="time-picker-title" id="time-picker-title">选择时间</span>
+                    <button class="btn-text" onclick="confirmTimePicker()">确定</button>
+                </div>
+                <div class="time-wheel-container">
+                    <div class="time-selection-indicator"></div>
+                    <div class="time-wheel" id="hour-wheel"></div>
+                    <div style="display: flex; align-items: center; font-size: 24px; font-weight: 600; color: var(--text-primary);">:</div>
+                    <div class="time-wheel" id="minute-wheel"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 新用户引导页面（备用） -->
+        <div id="onboarding-page" class="page hidden">
+            <div class="onboarding-container">
+                <h1 class="app-title">练了么</h1>
+                <p class="app-subtitle">让健身成为习惯</p>
+                
+                <div id="onboarding-steps">
+                    <!-- 步骤1：基本信息 -->
+                    <div class="onboarding-step active" id="step-1">
+                        <div class="step-header">
+                            <span class="step-indicator">1/4</span>
+                            <h2>基本信息</h2>
+                        </div>
+                        <div class="form-group">
+                            <label for="height">身高 (cm)</label>
+                            <input type="number" id="height" placeholder="例如: 175" min="100" max="250">
+                        </div>
+                        <div class="form-group">
+                            <label for="weight">当前体重 (kg)</label>
+                            <input type="number" id="weight" placeholder="例如: 70" min="30" max="300">
+                        </div>
+                        <button class="btn btn-primary" onclick="nextStep(1)">下一步</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- 主应用页面 -->
-        <div id="main-app" class="hidden">
+        <div id="main-app">
             <!-- 首页 -->
             <div id="home-page" class="page">
                 <div class="page-header">
@@ -199,31 +523,41 @@
                     <button class="btn-text" onclick="showPlanSettings()">⚙️</button>
                 </div>
                 
-                <!-- 当前计划阶段 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h3>当前阶段</h3>
-                        <span class="intensity-badge" id="current-intensity">强度: 中等</span>
-                    </div>
-                    <div class="stage-progress">
-                        <div class="progress-info">
-                            <span class="progress-text" id="stage-progress-text">阶段 1 / 4</span>
-                            <span class="progress-percent" id="stage-progress-percent">25%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="stage-progress-fill" style="width: 25%"></div>
-                        </div>
-                    </div>
+                <!-- 无计划状态 -->
+                <div id="no-plan-state" class="no-plan-state hidden">
+                    <div class="no-plan-icon">📋</div>
+                    <p class="no-plan-text">暂无计划</p>
+                    <p class="no-plan-subtext">请先完善个人资料以生成训练计划</p>
+                    <button class="btn btn-primary" onclick="showForcedOnboarding()">完善资料</button>
                 </div>
                 
-                <!-- 分阶段计划列表 -->
-                <div class="plan-stages" id="plan-stages">
-                    <!-- 动态填充 -->
+                <!-- 当前计划阶段 -->
+                <div id="plan-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>当前阶段</h3>
+                            <span class="intensity-badge" id="current-intensity">强度: 中等</span>
+                        </div>
+                        <div class="stage-progress">
+                            <div class="progress-info">
+                                <span class="progress-text" id="stage-progress-text">阶段 1 / 4</span>
+                                <span class="progress-percent" id="stage-progress-percent">25%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="stage-progress-fill" style="width: 25%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 分阶段计划列表 -->
+                    <div class="plan-stages" id="plan-stages">
+                        <!-- 动态填充 -->
+                    </div>
                 </div>
             </div>
             
             <!-- 日记页面 -->
-            <div id="diary-page" class="page">
+            <div id="diary-page" class="page hidden">
                 <div class="page-header">
                     <h1 class="page-title">训练日记</h1>
                     <div class="filter-options">
@@ -254,11 +588,14 @@
                 
                 <!-- 用户信息卡片 -->
                 <div class="card user-card">
-                    <div class="user-info" onclick="showEditProfile()">
-                        <div class="avatar" id="user-avatar">
-                            <span id="avatar-text">练</span>
+                    <div class="user-info">
+                        <div style="position: relative;" onclick="showAvatarPicker()">
+                            <div class="avatar" id="user-avatar">
+                                <span id="avatar-text">练</span>
+                            </div>
+                            <div class="avatar-edit-overlay">✏️</div>
                         </div>
-                        <div class="user-details">
+                        <div class="user-details" onclick="showEditProfile()">
                             <h2 id="user-name">健身爱好者</h2>
                             <p class="user-stats" id="user-stats">身高: -- cm | 体重: -- kg</p>
                         </div>
@@ -304,7 +641,7 @@
                             <span class="setting-arrow">›</span>
                         </div>
                         <div class="setting-item" onclick="showDNDSettings()">
-                            <div class="setting-icon">🔕</div>
+                            <div class="setting-icon"><span class="icon-moon"></span></div>
                             <div class="setting-info">
                                 <span class="setting-title">免打扰时段</span>
                                 <span class="setting-subtitle" id="dnd-status">未设置</span>
@@ -312,7 +649,7 @@
                             <span class="setting-arrow">›</span>
                         </div>
                         <div class="setting-item">
-                            <div class="setting-icon">⚡</div>
+                            <div class="setting-icon"><span class="icon-lightning"></span></div>
                             <div class="setting-info">
                                 <span class="setting-title">训练强度</span>
                                 <span class="setting-subtitle" id="intensity-status">中等</span>
@@ -327,14 +664,14 @@
                     <div class="settings-section">
                         <h4 class="section-title">数据管理</h4>
                         <div class="setting-item" onclick="exportData()">
-                            <div class="setting-icon">📤</div>
+                            <div class="setting-icon"><span class="icon-export"></span></div>
                             <div class="setting-info">
                                 <span class="setting-title">导出数据</span>
                             </div>
                             <span class="setting-arrow">›</span>
                         </div>
                         <div class="setting-item setting-danger" onclick="confirmResetData()">
-                            <div class="setting-icon">🗑️</div>
+                            <div class="setting-icon"><span class="icon-trash"></span></div>
                             <div class="setting-info">
                                 <span class="setting-title">重置数据</span>
                             </div>
@@ -345,7 +682,7 @@
                     <div class="settings-section">
                         <h4 class="section-title">关于</h4>
                         <div class="setting-item">
-                            <div class="setting-icon">ℹ️</div>
+                            <div class="setting-icon"><span class="icon-info"></span></div>
                             <div class="setting-info">
                                 <span class="setting-title">关于练了么</span>
                                 <span class="setting-subtitle">版本 1.0.0</span>
@@ -359,19 +696,19 @@
             <!-- 底部导航栏 -->
             <nav class="bottom-nav">
                 <div class="nav-item active" data-page="home" onclick="switchPage('home')">
-                    <span class="nav-icon">🏠</span>
+                    <span class="nav-icon"><span class="icon-home"></span></span>
                     <span class="nav-label">首页</span>
                 </div>
                 <div class="nav-item" data-page="plan" onclick="switchPage('plan')">
-                    <span class="nav-icon">📋</span>
+                    <span class="nav-icon"><span class="icon-plan"></span></span>
                     <span class="nav-label">计划</span>
                 </div>
                 <div class="nav-item" data-page="diary" onclick="switchPage('diary')">
-                    <span class="nav-icon">📝</span>
+                    <span class="nav-icon"><span class="icon-diary"></span></span>
                     <span class="nav-label">日记</span>
                 </div>
                 <div class="nav-item" data-page="profile" onclick="switchPage('profile')">
-                    <span class="nav-icon">👤</span>
+                    <span class="nav-icon"><span class="icon-profile"></span></span>
                     <span class="nav-label">我的</span>
                 </div>
             </nav>

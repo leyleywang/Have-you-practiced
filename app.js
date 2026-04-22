@@ -675,7 +675,17 @@ const UI = {
 
     // 计划页面渲染
     renderPlanPage() {
-        if (!AppState.plan) return;
+        const noPlanState = document.getElementById('no-plan-state');
+        const planContent = document.getElementById('plan-content');
+        
+        if (!AppState.plan) {
+            if (noPlanState) noPlanState.classList.remove('hidden');
+            if (planContent) planContent.classList.add('hidden');
+            return;
+        }
+
+        if (noPlanState) noPlanState.classList.add('hidden');
+        if (planContent) planContent.classList.remove('hidden');
 
         const intensityEl = document.getElementById('current-intensity');
         const progressTextEl = document.getElementById('stage-progress-text');
@@ -760,9 +770,15 @@ const UI = {
 
         diaries.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
 
-        if (diaries.length === 0) {
+        if (AppState.diaries.length === 0) {
             this.hide(listEl);
             this.show(emptyEl);
+            return;
+        }
+
+        if (diaries.length === 0) {
+            this.hide(listEl);
+            this.hide(emptyEl);
             return;
         }
 
@@ -1200,7 +1216,11 @@ const SettingsManager = {
                 </div>
                 <div class="form-group">
                     <label>提醒时间</label>
-                    <input type="time" id="reminder-time" value="${AppState.settings.reminderTime}">
+                    <div style="padding: 14px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-primary);" 
+                         onclick="openTimePickerForReminder()">
+                        <span id="reminder-time-display" style="font-size: 16px; font-weight: 500;">${AppState.settings.reminderTime}</span>
+                        <span style="float: right; color: var(--text-light);">›</span>
+                    </div>
                 </div>
                 <p class="help-text">开启后，将在设定时间提醒您进行训练</p>
             </div>
@@ -1232,11 +1252,19 @@ const SettingsManager = {
                 </div>
                 <div class="form-group">
                     <label>开始时间</label>
-                    <input type="time" id="dnd-start" value="${AppState.settings.dndStart}">
+                    <div style="padding: 14px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-primary);" 
+                         onclick="openTimePickerForDndStart()">
+                        <span id="dnd-start-display" style="font-size: 16px; font-weight: 500;">${AppState.settings.dndStart}</span>
+                        <span style="float: right; color: var(--text-light);">›</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>结束时间</label>
-                    <input type="time" id="dnd-end" value="${AppState.settings.dndEnd}">
+                    <div style="padding: 14px 16px; border: 2px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; background: var(--bg-primary);" 
+                         onclick="openTimePickerForDndEnd()">
+                        <span id="dnd-end-display" style="font-size: 16px; font-weight: 500;">${AppState.settings.dndEnd}</span>
+                        <span style="float: right; color: var(--text-light);">›</span>
+                    </div>
                 </div>
                 <p class="help-text">在免打扰时段内，将不会发送训练提醒</p>
             </div>
@@ -1455,9 +1483,38 @@ function showTrainingSettings() {
     SettingsManager.showTrainingSettings();
 }
 
+let tempReminderTime = null;
+let tempDndStartTime = null;
+let tempDndEndTime = null;
+
+function openTimePickerForReminder() {
+    const currentTime = AppState.settings.reminderTime;
+    const [hour, minute] = currentTime.split(':').map(Number);
+    TimePicker.selectedHour = hour;
+    TimePicker.selectedMinute = minute;
+    TimePicker.show('reminder', '选择提醒时间');
+}
+
+function openTimePickerForDndStart() {
+    const currentTime = AppState.settings.dndStart;
+    const [hour, minute] = currentTime.split(':').map(Number);
+    TimePicker.selectedHour = hour;
+    TimePicker.selectedMinute = minute;
+    TimePicker.show('dnd-start', '选择开始时间');
+}
+
+function openTimePickerForDndEnd() {
+    const currentTime = AppState.settings.dndEnd;
+    const [hour, minute] = currentTime.split(':').map(Number);
+    TimePicker.selectedHour = hour;
+    TimePicker.selectedMinute = minute;
+    TimePicker.show('dnd-end', '选择结束时间');
+}
+
 function saveReminderSettings() {
     const enabled = document.getElementById('reminder-toggle').checked;
-    const time = document.getElementById('reminder-time').value;
+    const timeDisplay = document.getElementById('reminder-time-display');
+    const time = timeDisplay ? timeDisplay.textContent : AppState.settings.reminderTime;
 
     AppState.settings.reminderEnabled = enabled;
     AppState.settings.reminderTime = time;
@@ -1474,8 +1531,10 @@ function showDNDSettings() {
 
 function saveDNDSettings() {
     const enabled = document.getElementById('dnd-toggle').checked;
-    const start = document.getElementById('dnd-start').value;
-    const end = document.getElementById('dnd-end').value;
+    const startDisplay = document.getElementById('dnd-start-display');
+    const endDisplay = document.getElementById('dnd-end-display');
+    const start = startDisplay ? startDisplay.textContent : AppState.settings.dndStart;
+    const end = endDisplay ? endDisplay.textContent : AppState.settings.dndEnd;
 
     AppState.settings.dndEnabled = enabled;
     AppState.settings.dndStart = start;
@@ -1559,27 +1618,407 @@ function resetData() {
     UI.showOnboarding();
 }
 
-// ==================== 应用初始化 ====================
+// ==================== 强制引导弹窗管理 ====================
+const ForcedOnboarding = {
+    currentStep: 1,
+    tempData: {
+        goal: null,
+        weeklyDays: null,
+        injuries: []
+    },
+
+    show() {
+        const overlay = document.getElementById('forced-onboarding-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+        }
+        this.showStep(1);
+    },
+
+    hide() {
+        const overlay = document.getElementById('forced-onboarding-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+        }
+    },
+
+    showStep(step) {
+        for (let i = 1; i <= 4; i++) {
+            const stepEl = document.getElementById(`forced-step-${i}`);
+            if (stepEl) {
+                if (i === step) {
+                    stepEl.classList.remove('hidden');
+                } else {
+                    stepEl.classList.add('hidden');
+                }
+            }
+        }
+        this.currentStep = step;
+        this.updateStepIndicator();
+    },
+
+    updateStepIndicator() {
+        const dots = document.querySelectorAll('.forced-step-dot');
+        dots.forEach((dot, index) => {
+            dot.classList.remove('active', 'completed');
+            if (index + 1 < this.currentStep) {
+                dot.classList.add('completed');
+            } else if (index + 1 === this.currentStep) {
+                dot.classList.add('active');
+            }
+        });
+    },
+
+    nextStep(currentStep) {
+        if (currentStep === 1) {
+            const height = document.getElementById('forced-height').value;
+            const weight = document.getElementById('forced-weight').value;
+            
+            if (!height || !weight) {
+                UI.showNotification('提示', '请填写身高和体重', '⚠️');
+                return;
+            }
+            
+            this.tempData.height = height;
+            this.tempData.weight = weight;
+        } else if (currentStep === 2) {
+            if (!this.tempData.goal) {
+                UI.showNotification('提示', '请选择健身目标', '⚠️');
+                return;
+            }
+        } else if (currentStep === 3) {
+            if (!this.tempData.weeklyDays) {
+                UI.showNotification('提示', '请选择每周训练天数', '⚠️');
+                return;
+            }
+        }
+
+        this.showStep(currentStep + 1);
+    },
+
+    prevStep(currentStep) {
+        this.showStep(currentStep - 1);
+    },
+
+    selectGoal(goal) {
+        this.tempData.goal = goal;
+        const options = document.querySelectorAll('#forced-step-2 .goal-option');
+        options.forEach(el => {
+            el.classList.toggle('selected', el.dataset.goal === goal);
+        });
+    },
+
+    selectDays(days) {
+        this.tempData.weeklyDays = days;
+        const options = document.querySelectorAll('#forced-step-3 .day-option');
+        options.forEach(el => {
+            el.classList.toggle('selected', parseInt(el.dataset.days) === days);
+        });
+    },
+
+    getSelectedInjuries() {
+        const injuries = [];
+        const inputs = document.querySelectorAll('#forced-step-4 .injury-option input:checked');
+        inputs.forEach(input => {
+            injuries.push(input.dataset.injury);
+        });
+        return injuries;
+    },
+
+    complete() {
+        this.tempData.injuries = this.getSelectedInjuries();
+        
+        const user = Models.createUser(this.tempData);
+        const plan = Models.createPlan(user);
+        const weightRecord = Models.createWeightRecord(user.initialWeight);
+        
+        AppState.user = user;
+        AppState.plan = plan;
+        AppState.weightHistory = [weightRecord];
+        AppState.save();
+
+        this.hide();
+        UI.showMainApp();
+        UI.showNotification('欢迎加入！', '已根据您的情况生成训练计划', '🎉');
+    }
+};
+
+// ==================== 时间选择器管理 ====================
+const TimePicker = {
+    currentField: null,
+    selectedHour: 18,
+    selectedMinute: 0,
+
+    show(fieldId, title = '选择时间') {
+        this.currentField = fieldId;
+        
+        const overlay = document.getElementById('time-picker-overlay');
+        const titleEl = document.getElementById('time-picker-title');
+        
+        if (titleEl) {
+            titleEl.textContent = title;
+        }
+        
+        this.initWheels();
+        
+        if (overlay) {
+            overlay.classList.remove('hidden');
+        }
+    },
+
+    hide() {
+        const overlay = document.getElementById('time-picker-overlay');
+        if (overlay) {
+            overlay.classList.add('hidden');
+        }
+    },
+
+    initWheels() {
+        const hourWheel = document.getElementById('hour-wheel');
+        const minuteWheel = document.getElementById('minute-wheel');
+        
+        if (hourWheel) {
+            hourWheel.innerHTML = '';
+            for (let i = 0; i < 24; i++) {
+                const item = document.createElement('div');
+                item.className = `time-wheel-item ${i === this.selectedHour ? 'selected' : ''}`;
+                item.textContent = i.toString().padStart(2, '0');
+                item.dataset.value = i;
+                item.addEventListener('click', () => this.selectHour(i));
+                hourWheel.appendChild(item);
+            }
+            this.scrollToSelected(hourWheel, this.selectedHour);
+        }
+        
+        if (minuteWheel) {
+            minuteWheel.innerHTML = '';
+            for (let i = 0; i < 60; i += 5) {
+                const item = document.createElement('div');
+                item.className = `time-wheel-item ${i === this.selectedMinute ? 'selected' : ''}`;
+                item.textContent = i.toString().padStart(2, '0');
+                item.dataset.value = i;
+                item.addEventListener('click', () => this.selectMinute(i));
+                minuteWheel.appendChild(item);
+            }
+            this.scrollToSelected(minuteWheel, this.selectedMinute / 5);
+        }
+    },
+
+    scrollToSelected(wheel, index) {
+        const itemHeight = 50;
+        wheel.scrollTop = index * itemHeight - wheel.offsetHeight / 2 + itemHeight / 2;
+    },
+
+    selectHour(hour) {
+        this.selectedHour = hour;
+        const items = document.querySelectorAll('#hour-wheel .time-wheel-item');
+        items.forEach(item => {
+            item.classList.toggle('selected', parseInt(item.dataset.value) === hour);
+        });
+    },
+
+    selectMinute(minute) {
+        this.selectedMinute = minute;
+        const items = document.querySelectorAll('#minute-wheel .time-wheel-item');
+        items.forEach(item => {
+            item.classList.toggle('selected', parseInt(item.dataset.value) === minute);
+        });
+    },
+
+    confirm() {
+        const timeStr = `${this.selectedHour.toString().padStart(2, '0')}:${this.selectedMinute.toString().padStart(2, '0')}`;
+        
+        if (this.currentField === 'reminder') {
+            AppState.settings.reminderTime = timeStr;
+            const displayEl = document.getElementById('reminder-time-display');
+            if (displayEl) {
+                displayEl.textContent = timeStr;
+            }
+        } else if (this.currentField === 'dnd-start') {
+            AppState.settings.dndStart = timeStr;
+            const displayEl = document.getElementById('dnd-start-display');
+            if (displayEl) {
+                displayEl.textContent = timeStr;
+            }
+        } else if (this.currentField === 'dnd-end') {
+            AppState.settings.dndEnd = timeStr;
+            const displayEl = document.getElementById('dnd-end-display');
+            if (displayEl) {
+                displayEl.textContent = timeStr;
+            }
+        }
+        
+        AppState.save();
+        this.hide();
+        
+        return timeStr;
+    }
+};
+
+// ==================== 头像选择管理 ====================
+const AvatarManager = {
+    selectedAvatar: 1,
+    avatarChars: ['练', '健', '身', '动', '力', '强', '酷', '帅'],
+
+    showPicker() {
+        const modalContent = `
+            <div class="modal-header">
+                <h3 class="modal-title">选择头像</h3>
+                <button class="modal-close" onclick="UI.hideModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="avatar-options">
+                    ${[1, 2, 3, 4, 5, 6, 7, 8].map(num => `
+                        <div class="avatar-option avatar-${num} ${this.selectedAvatar === num ? 'selected' : ''}" 
+                             onclick="AvatarManager.select(${num})">
+                            ${this.avatarChars[num - 1]}
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="UI.hideModal()">取消</button>
+                    <button class="btn btn-primary" onclick="AvatarManager.confirm()">确定</button>
+                </div>
+            </div>
+        `;
+        
+        UI.showModal(modalContent);
+    },
+
+    select(num) {
+        this.selectedAvatar = num;
+        document.querySelectorAll('.avatar-option').forEach(el => {
+            el.classList.toggle('selected', el.classList.contains(`avatar-${num}`));
+        });
+    },
+
+    confirm() {
+        if (!AppState.user) {
+            AppState.user = {};
+        }
+        AppState.user.avatarIndex = this.selectedAvatar;
+        AppState.user.avatarChar = this.avatarChars[this.selectedAvatar - 1];
+        AppState.save();
+        
+        this.updateDisplay();
+        UI.hideModal();
+        UI.showNotification('已保存', '头像已更新', '✓');
+    },
+
+    updateDisplay() {
+        const avatarEl = document.getElementById('user-avatar');
+        const avatarTextEl = document.getElementById('avatar-text');
+        
+        if (AppState.user && AppState.user.avatarIndex) {
+            const avatarIndex = AppState.user.avatarIndex;
+            if (avatarEl) {
+                avatarEl.className = `avatar avatar-${avatarIndex}`;
+            }
+            if (avatarTextEl && AppState.user.avatarChar) {
+                avatarTextEl.textContent = AppState.user.avatarChar;
+            }
+        }
+    }
+};
+
+// ==================== 页面增强功能 ====================
+function showForcedOnboarding() {
+    ForcedOnboarding.show();
+}
+
+function forcedNextStep(step) {
+    ForcedOnboarding.nextStep(step);
+}
+
+function forcedPrevStep(step) {
+    ForcedOnboarding.prevStep(step);
+}
+
+function selectForcedGoal(goal) {
+    ForcedOnboarding.selectGoal(goal);
+}
+
+function selectForcedDays(days) {
+    ForcedOnboarding.selectDays(days);
+}
+
+function completeForcedOnboarding() {
+    ForcedOnboarding.complete();
+}
+
+function openTimePicker(fieldId, title) {
+    TimePicker.show(fieldId, title);
+}
+
+function closeTimePicker() {
+    TimePicker.hide();
+}
+
+function confirmTimePicker() {
+    const timeStr = TimePicker.confirm();
+    if (TimePicker.currentField === 'reminder') {
+        const reminderTimeEl = document.getElementById('reminder-time');
+        if (reminderTimeEl) {
+            reminderTimeEl.value = timeStr;
+        }
+    } else if (TimePicker.currentField === 'dnd-start') {
+        const dndStartEl = document.getElementById('dnd-start');
+        if (dndStartEl) {
+            dndStartEl.value = timeStr;
+        }
+    } else if (TimePicker.currentField === 'dnd-end') {
+        const dndEndEl = document.getElementById('dnd-end');
+        if (dndEndEl) {
+            dndEndEl.value = timeStr;
+        }
+    }
+}
+
+function showAvatarPicker() {
+    if (AppState.user && AppState.user.avatarIndex) {
+        AvatarManager.selectedAvatar = AppState.user.avatarIndex;
+    }
+    AvatarManager.showPicker();
+}
+
+// ==================== 应用初始化（修改版） ====================
 document.addEventListener('DOMContentLoaded', function() {
     AppState.init();
 
     if (AppState.isNewUser()) {
-        UI.showOnboarding();
+        UI.showMainApp();
+        setTimeout(() => {
+            ForcedOnboarding.show();
+        }, 100);
     } else {
         UI.showMainApp();
         PlanManager.checkMissedWorkouts();
+        AvatarManager.updateDisplay();
     }
 
     const modalOverlay = document.getElementById('modal-overlay');
-    modalOverlay.addEventListener('click', function(e) {
-        if (e.target === modalOverlay) {
-            UI.hideModal();
-        }
-    });
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', function(e) {
+            if (e.target === modalOverlay) {
+                UI.hideModal();
+            }
+        });
+    }
 
     const notificationClose = document.querySelector('.notification-close');
     if (notificationClose) {
         notificationClose.addEventListener('click', UI.hideNotification);
+    }
+
+    const timePickerOverlay = document.getElementById('time-picker-overlay');
+    if (timePickerOverlay) {
+        timePickerOverlay.addEventListener('click', function(e) {
+            if (e.target === timePickerOverlay) {
+                TimePicker.hide();
+            }
+        });
     }
 });
 
