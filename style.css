@@ -349,35 +349,32 @@
 .icon-pencil {
     position: relative;
     display: inline-block;
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     vertical-align: middle;
 }
 
 .icon-pencil::before {
     content: '';
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 8px;
-    height: 8px;
-    border: 2px solid currentColor;
-    border-right: none;
-    border-bottom: none;
-    transform: rotate(-45deg);
-    transform-origin: bottom right;
+    top: 1px;
+    left: 4px;
+    width: 4px;
+    height: 9px;
+    background: currentColor;
+    border-radius: 1px;
 }
 
 .icon-pencil::after {
     content: '';
     position: absolute;
-    bottom: 2px;
-    right: 2px;
-    width: 6px;
-    height: 2px;
-    background: currentColor;
-    transform: rotate(-45deg);
-    transform-origin: right center;
+    top: 1px;
+    left: 2px;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-bottom: 4px solid currentColor;
 }
 
 /* 时钟图标 */
@@ -413,6 +410,38 @@
     background: currentColor;
     transform-origin: left center;
     transform: translate(-1px, -1px) rotate(0deg);
+}
+
+/* 体重图标 */
+.icon-weight {
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 12px;
+    vertical-align: middle;
+}
+
+.icon-weight::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 1px;
+    width: 14px;
+    height: 10px;
+    border: 2px solid currentColor;
+    border-radius: 1px 1px 3px 3px;
+}
+
+.icon-weight::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    width: 8px;
+    height: 4px;
+    border-left: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    transform: translateX(-50%);
 }
 
 /* 勾选图标 */

@@ -817,7 +817,7 @@ const UI = {
                             <div class="diary-name">${diary.name}</div>
                             <div class="diary-details">
                                 <div class="diary-detail-item"><span class="icon-clock" style="margin-right: 4px;"></span>${diary.duration}分钟</div>
-                                <div class="diary-detail-item"><span class="icon-scale-style" style="margin-right: 4px; width: 14px; height: 12px;"></span>${diary.targetWeight}kg</div>
+                                <div class="diary-detail-item"><span class="icon-weight" style="margin-right: 4px;"></span>${diary.targetWeight}kg</div>
                                 <div class="diary-detail-item">${diary.completed ? '<span class=\"icon-check\" style=\"margin-right: 4px; color: var(--success-color);\"></span>已完成' : '<span class=\"icon-cross\" style=\"margin-right: 4px; color: var(--danger-color);\"></span>未完成'}</div>
                             </div>
                         </div>
